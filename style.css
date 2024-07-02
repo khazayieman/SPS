@@ -4,19 +4,29 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 header {
     background-color: #333;
     color: #fff;
-    padding: 15px 0;
+    padding: 15px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .logo {
+    font-size: 24px;
+    font-weight: 700;
 }
 
 header nav ul {
     list-style: none;
     display: flex;
-    justify-content: center;
     margin: 0;
     padding: 0;
 }
@@ -42,6 +52,7 @@ header nav ul li a:hover {
 }
 
 main {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -53,29 +64,35 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* Table Styles */
-table {
-    border-collapse: collapse;
-    width: 80%;
-    max-width: 800px;
-    margin: 20px 0;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Slot Container and Cards */
+.slot-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
 }
 
-th, td {
+.slot-card {
+    background: #fff;
     border: 1px solid #ddd;
-    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
     text-align: center;
+    width: 200px;
 }
 
-th {
-    background-color: #f2f2f2;
-    color: #333;
+.slot-card h2 {
+    margin: 0 0 10px;
 }
 
-td {
-    color: #555;
+.slot-card p {
+    margin: 0;
+    font-size: 16px;
+}
+
+.status {
+    font-weight: bold;
 }
 
 .occupied {
@@ -86,75 +103,85 @@ td {
     color: green;
 }
 
+/* Footer */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 15px 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+}
+
 /* Form Styles */
 .box {
-    padding: 20px 30px;
+    background: rgba(49, 49, 49, .8);
+    border-radius: 8px;
+    padding: 20px;
     width: 100%;
     max-width: 400px;
-    backdrop-filter: blur(10px);
-    border-radius: 5px;
-    background: rgba(49, 49, 49, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    margin: 20px 0;
+    margin: 0 auto;
 }
 
-.box .form h2 {
+.form {
+    position: relative;
+}
+
+.form h2 {
     text-align: center;
     color: #fff;
+    margin-bottom: 20px;
 }
 
-.box .form form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.box .form form .inputbox {
+.inputbox {
     position: relative;
-    margin-bottom: 30px;
-    width: 100%;
+    margin-bottom: 20px;
 }
 
-.box .form form .inputbox input {
+.inputbox input {
     width: 100%;
-    padding: 10px 20px;
-    border: none;
-    outline: none;
+    padding: 10px;
     background: none;
-    border-bottom: 1px solid #12151e;
+    border: none;
+    border-bottom: 1px solid #fff;
     color: #fff;
     font-size: 16px;
+    outline: none;
 }
 
-.box .form form .inputbox span {
+.inputbox span {
     position: absolute;
-    top: 0;
     left: 0;
-    transform: translateY(-20px);
-    font-size: 14px;
-    color: #fff;
+    top: 0;
+    padding: 10px;
     pointer-events: none;
     transition: 0.5s;
 }
 
-.box .form form .inputbox input:focus ~ span,
-.box .form form .inputbox input:valid ~ span {
-    transform: translateY(-40px);
+.inputbox input:focus ~ span,
+.inputbox input:valid ~ span {
+    transform: translateY(-20px);
     font-size: 12px;
     color: #0cc0df;
 }
 
-.box .form form .sub {
-    padding: 10px 20px;
+.sub {
+    width: 100%;
+    padding: 10px;
+    background: #0cc0df;
     color: #fff;
     border: none;
-    outline: none;
-    background: #0cc0df;
     cursor: pointer;
-    font-size: 16px;
     transition: background 0.3s;
+    font-size: 16px;
+    outline: none;
 }
 
-.box .form form .sub:hover {
+.sub:hover {
     background: #098caa;
 }

@@ -10,6 +10,7 @@
 </head>
 <body>
     <header>
+        <div class="logo">Parking System</div>
         <nav>
             <ul>
                 <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
@@ -20,41 +21,36 @@
     </header>
     <main>
         <h1>Parking Slot Status</h1>
-        <table id="slotTable">
-            <thead>
-                <tr>
-                    <th>Slot</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Slot 1</td>
-                    <td id="slot1">Loading...</td>
-                </tr>
-                <tr>
-                    <td>Slot 2</td>
-                    <td id="slot2">Loading...</td>
-                </tr>
-                <tr>
-                    <td>Slot 3</td>
-                    <td id="slot3">Loading...</td>
-                </tr>
-                <tr>
-                    <td>Slot 4</td>
-                    <td id="slot4">Loading...</td>
-                </tr>
-                <tr>
-                    <td>Slot 5</td>
-                    <td id="slot5">Loading...</td>
-                </tr>
-                <tr>
-                    <td>Slot 6</td>
-                    <td id="slot6">Loading...</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="slot-container">
+            <div class="slot-card" id="slot1">
+                <h2>Slot 1</h2>
+                <p>Status: <span class="status">Loading...</span></p>
+            </div>
+            <div class="slot-card" id="slot2">
+                <h2>Slot 2</h2>
+                <p>Status: <span class="status">Loading...</span></p>
+            </div>
+            <div class="slot-card" id="slot3">
+                <h2>Slot 3</h2>
+                <p>Status: <span class="status">Loading...</span></p>
+            </div>
+            <div class="slot-card" id="slot4">
+                <h2>Slot 4</h2>
+                <p>Status: <span class="status">Loading...</span></p>
+            </div>
+            <div class="slot-card" id="slot5">
+                <h2>Slot 5</h2>
+                <p>Status: <span class="status">Loading...</span></p>
+            </div>
+            <div class="slot-card" id="slot6">
+                <h2>Slot 6</h2>
+                <p>Status: <span class="status">Loading...</span></p>
+            </div>
+        </div>
     </main>
+    <footer>
+        <p>&copy; 2024 Parking System. All rights reserved.</p>
+    </footer>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
@@ -73,21 +69,23 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        function updateTable(slot, status) {
-            const slotElement = document.getElementById(slot);
+        function updateSlotStatus(slotId, status) {
+            const slotElement = document.getElementById(slotId).querySelector('.status');
             if (status === 1) {
                 slotElement.textContent = 'Occupied';
-                slotElement.className = 'occupied';
+                slotElement.classList.add('occupied');
+                slotElement.classList.remove('free');
             } else {
                 slotElement.textContent = 'Free';
-                slotElement.className = 'free';
+                slotElement.classList.add('free');
+                slotElement.classList.remove('occupied');
             }
         }
 
         onValue(ref(db), (snapshot) => {
             const data = snapshot.val();
             for (let i = 1; i <= 6; i++) {
-                updateTable(`slot${i}`, data[`slot${i}`]);
+                updateSlotStatus(`slot${i}`, data[`slot${i}`]);
             }
         });
     </script>

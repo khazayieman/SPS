@@ -5,38 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register & Pay</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
+        <div class="logo">Parking System</div>
         <nav>
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="register.html">Register & Pay</a></li>
-                <li><a href="admin.html">Admin</a></li>
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="register.html"><i class="fas fa-car"></i> Register & Pay</a></li>
+                <li><a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a></li>
             </ul>
         </nav>
     </header>
     <main>
         <div class="box">
             <div class="form">
-                <h2>Register & Pay</h2>
-                <form id="register-form">
+                <h2>Vehicle Registration</h2>
+                <form id="registerForm">
                     <div class="inputbox">
-                        <input type="text" value="" id="car-plate" required>
+                        <input type="text" id="carPlate" required>
                         <span>Car Plate</span>
                     </div>
                     <div class="inputbox">
-                        <input type="number" value="" id="payment" required>
+                        <input type="number" id="payment" required>
                         <span>Payment ($1 per 10 minutes)</span>
                     </div>
-                    <input type="submit" value="Submit" class="sub" id="submit">
+                    <button type="submit" class="sub">Register & Pay</button>
                 </form>
             </div>
         </div>
     </main>
+    <footer>
+        <p>&copy; 2024 Parking System. All rights reserved.</p>
+    </footer>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-        import { getDatabase, ref, set, push, remove } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { getDatabase, ref, set, remove } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAqx_A1kf7D0W4M9wN69Zt3iRUgn59DNQU",
@@ -52,28 +58,26 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        document.getElementById("submit").addEventListener('click', function(e){
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const carPlate = document.getElementById("car-plate").value;
-            const payment = parseInt(document.getElementById("payment").value);
-            const duration = payment * 10 * 60 * 1000; // $1 per 10 minutes
 
-            const newEntry = {
+            const carPlate = document.getElementById('carPlate').value;
+            const payment = document.getElementById('payment').value;
+            const timePaid = payment * 10; // $1 = 10 minutes
+            const endTime = Date.now() + timePaid * 60000;
+
+            set(ref(db, 'vehicles/' + carPlate), {
                 carPlate: carPlate,
                 payment: payment,
-                entryTime: new Date().toISOString(),
-            };
+                endTime: endTime
+            });
 
-            const newRef = push(ref(db, 'users'));
-            set(newRef, newEntry);
+            alert('Vehicle registered and payment successful!');
 
             setTimeout(() => {
-                remove(ref(db, 'users/' + newRef.key));
-                alert(`Time is up for car: ${carPlate}`);
-            }, duration);
-
-            document.getElementById("register-form").reset();
-            alert("Vehicle registered and payment successful!");
+                remove(ref(db, 'vehicles/' + carPlate));
+                alert(`Time's up for ${carPlate}!`);
+            }, timePaid * 60000);
         });
     </script>
 </body>
