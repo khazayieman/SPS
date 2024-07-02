@@ -148,5 +148,40 @@ h1 {
 
     .box {
         width: 90%;
+        padding: 15px 20px;
+        margin: 10px 0;
+    }
+
+    .box .form {
+        padding: 5px 10px;
+    }
+
+    .box .form h2 {
+        font-size: 24px;
+    }
+
+    .box .form form .inputbox {
+        margin-bottom: 20px;
+    }
+
+    .box .form form .inputbox input {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+
+    .box .form form .inputbox span {
+        font-size: 12px;
+        transform: translateY(-15px);
+    }
+
+    .box .form form .inputbox input:focus ~ span,
+    .box .form form .inputbox input:valid ~ span {
+        transform: translateY(-30px);
+        font-size: 10px;
+    }
+
+    .box .form form .sub {
+        padding: 8px 15px;
+        font-size: 14px;
     }
 }
