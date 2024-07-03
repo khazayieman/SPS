@@ -58,7 +58,7 @@
             height: 400px;
             margin-bottom: 20px;
         }
-        .form {
+        .form, .user-list {
             width: 80%;
             max-width: 400px;
             background: #fff;
@@ -66,21 +66,21 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
-        .form h2 {
+        .form h2, .user-list h2 {
             margin-bottom: 15px;
         }
-        .form .inputbox {
+        .form .inputbox, .user-list .inputbox {
             position: relative;
             margin-bottom: 30px;
         }
-        .form .inputbox input {
+        .form .inputbox input, .user-list .inputbox input {
             width: 100%;
             padding: 10px;
             border: none;
             border-bottom: 2px solid #ccc;
             outline: none;
         }
-        .form .inputbox span {
+        .form .inputbox span, .user-list .inputbox span {
             position: absolute;
             left: 0;
             top: 10px;
@@ -88,13 +88,13 @@
             color: #aaa;
             transition: 0.3s;
         }
-        .form .inputbox input:focus + span,
-        .form .inputbox input:valid + span {
+        .form .inputbox input:focus + span, .user-list .inputbox input:focus + span,
+        .form .inputbox input:valid + span, .user-list .inputbox input:valid + span {
             top: -10px;
             font-size: 12px;
             color: #333;
         }
-        .form .submit-btn {
+        .form .submit-btn, .user-list .submit-btn {
             width: 100%;
             padding: 10px;
             background: #0cc0df;
@@ -104,7 +104,7 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .form .submit-btn:hover {
+        .form .submit-btn:hover, .user-list .submit-btn:hover {
             background: #0a9ab6;
         }
         @media (max-width: 600px) {
@@ -137,29 +137,11 @@
         <h1>Admin Page</h1>
         <div id="chart"></div>
 
-        <div class="form">
-            <h2>Create User</h2>
-            <div class="inputbox">
-                <input type="text" id="create-username" required>
-                <span>Username</span>
-            </div>
-            <div class="inputbox">
-                <input type="email" id="create-email" required>
-                <span>Email</span>
-            </div>
-            <div class="inputbox">
-                <input type="text" id="create-phone" required>
-                <span>Phone Number</span>
-            </div>
-            <div class="inputbox">
-                <input type="text" id="create-plate" required>
-                <span>Car Plate</span>
-            </div>
-            <div class="inputbox">
-                <input type="number" id="create-amount" required>
-                <span>Payment Amount ($)</span>
-            </div>
-            <button class="submit-btn" id="create-user">Create User</button>
+        <div class="user-list">
+            <h2>All Users</h2>
+            <ul id="user-list">
+                <!-- Users will be populated here -->
+            </ul>
         </div>
 
         <div class="form">
@@ -174,7 +156,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAqx_A1kf7D0W4M9wN69Zt3iRUgn59DNQU",
@@ -216,28 +198,14 @@
                     }
                 }
             });
-        });
 
-        document.getElementById("create-user").addEventListener('click', function(e) {
-            e.preventDefault();
-            const username = document.getElementById("create-username").value;
-            const email = document.getElementById("create-email").value;
-            const phone = document.getElementById("create-phone").value;
-            const plate = document.getElementById("create-plate").value;
-            const amount = document.getElementById("create-amount").value;
-
-            const endTime = Date.now() + amount * 600000;
-
-            set(ref(db, 'vehicles/' + plate), {
-                username: username,
-                email: email,
-                phone: phone,
-                plate: plate,
-                endTime: endTime
-            }).then(() => {
-                alert("Vehicle registered successfully!");
-            }).catch((error) => {
-                alert("Failed to register vehicle: " + error.message);
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = '';
+            labels.forEach(label => {
+                const user = data[label];
+                const listItem = document.createElement('li');
+                listItem.textContent = `Plate: ${label}, User: ${user.username}, Email: ${user.email}, Phone: ${user.phone}, End Time: ${new Date(user.endTime).toLocaleString()}`;
+                userList.appendChild(listItem);
             });
         });
 
