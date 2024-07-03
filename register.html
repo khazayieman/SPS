@@ -3,14 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register & Pay</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Vehicle Registration & Payment</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        header nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        header nav ul li {
+            margin: 0 15px;
+        }
+        header nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        header nav ul li a i {
+            margin-right: 8px;
+        }
+        header nav ul li a:hover {
+            text-decoration: underline;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        .box {
+            padding: 20px 30px;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border-radius: 5px;
+            background: rgba(49, 49, 49, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin: 20px 0;
+        }
+        .box .form {
+            padding: 10px 20px;
+        }
+        .box .form h2 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .box .form form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .box .form form .inputbox {
+            position: relative;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        .box .form form .inputbox input {
+            width: 100%;
+            padding: 10px 20px;
+            border: none;
+            outline: none;
+            background: none;
+            border-bottom: 1px solid #fff;
+            color: #fff;
+        }
+        .box .form form .inputbox span {
+            position: absolute;
+            left: 0;
+            top: 10px;
+            font-size: 14px;
+            color: #fff;
+            transition: 0.3s;
+        }
+        .box .form form .inputbox input:focus + span,
+        .box .form form .inputbox input:valid + span {
+            top: -10px;
+            left: 0;
+            font-size: 12px;
+            color: #0cc0df;
+        }
+        .box .form form .sub {
+            padding: 10px 20px;
+            color: #fff;
+            border: none;
+            outline: none;
+            background: #0cc0df;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            max-width: 150px;
+        }
+        @media (max-width: 600px) {
+            header nav ul {
+                flex-direction: column;
+            }
+            header nav ul li {
+                margin: 10px 0;
+            }
+            main {
+                padding: 10px;
+            }
+            .box {
+                width: 90%;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
-        <div class="logo">Parking System</div>
         <nav>
             <ul>
                 <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
@@ -22,27 +144,37 @@
     <main>
         <div class="box">
             <div class="form">
-                <h2>Vehicle Registration</h2>
-                <form id="registerForm">
+                <h2>Register Vehicle</h2>
+                <form>
                     <div class="inputbox">
-                        <input type="text" id="carPlate" required>
+                        <input type="text" id="username" required>
+                        <span>Username</span>
+                    </div>
+                    <div class="inputbox">
+                        <input type="email" id="email" required>
+                        <span>Email</span>
+                    </div>
+                    <div class="inputbox">
+                        <input type="text" id="phone" required>
+                        <span>Phone Number</span>
+                    </div>
+                    <div class="inputbox">
+                        <input type="text" id="plate" required>
                         <span>Car Plate</span>
                     </div>
                     <div class="inputbox">
-                        <input type="number" id="payment" required>
-                        <span>Payment ($1 per 10 minutes)</span>
+                        <input type="number" id="amount" required>
+                        <span>Payment Amount ($)</span>
                     </div>
-                    <button type="submit" class="sub">Register & Pay</button>
+                    <input type="submit" value="Register" class="sub" id="submit">
                 </form>
             </div>
         </div>
     </main>
-    <footer>
-        <p>&copy; 2024 Parking System. All rights reserved.</p>
-    </footer>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-        import { getDatabase, ref, set, remove } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, set, get, child, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAqx_A1kf7D0W4M9wN69Zt3iRUgn59DNQU",
@@ -57,27 +189,46 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const messaging = getMessaging(app);
 
-        document.getElementById('registerForm').addEventListener('submit', (e) => {
+        document.getElementById("submit").addEventListener('click', function(e) {
             e.preventDefault();
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+            const plate = document.getElementById("plate").value;
+            const amount = document.getElementById("amount").value;
 
-            const carPlate = document.getElementById('carPlate').value;
-            const payment = document.getElementById('payment').value;
-            const timePaid = payment * 10; // $1 = 10 minutes
-            const endTime = Date.now() + timePaid * 60000;
+            const endTime = Date.now() + amount * 600000;
 
-            set(ref(db, 'vehicles/' + carPlate), {
-                carPlate: carPlate,
-                payment: payment,
+            set(ref(db, 'vehicles/' + plate), {
+                username: username,
+                email: email,
+                phone: phone,
+                plate: plate,
                 endTime: endTime
+            }).then(() => {
+                alert("Vehicle registered successfully!");
+                startTimer(plate, endTime);
+            }).catch((error) => {
+                alert("Failed to register vehicle: " + error.message);
             });
+        });
 
-            alert('Vehicle registered and payment successful!');
+        function startTimer(plate, endTime) {
+            const interval = setInterval(() => {
+                const now = Date.now();
+                if (now >= endTime) {
+                    clearInterval(interval);
+                    remove(ref(db, 'vehicles/' + plate));
+                    alert("Your time has expired, your vehicle has been removed from the system.");
+                }
+            }, 1000);
+        }
 
-            setTimeout(() => {
-                remove(ref(db, 'vehicles/' + carPlate));
-                alert(`Time's up for ${carPlate}!`);
-            }, timePaid * 60000);
+        onMessage(messaging, (payload) => {
+            console.log('Message received. ', payload);
+            alert(payload.notification.title + ": " + payload.notification.body);
         });
     </script>
 </body>
