@@ -3,14 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Admin Page</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        header nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        header nav ul li {
+            margin: 0 15px;
+        }
+        header nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        header nav ul li a i {
+            margin-right: 8px;
+        }
+        header nav ul li a:hover {
+            text-decoration: underline;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        #chart {
+            width: 80%;
+            max-width: 600px;
+            height: 400px;
+        }
+        @media (max-width: 600px) {
+            header nav ul {
+                flex-direction: column;
+            }
+            header nav ul li {
+                margin: 10px 0;
+            }
+            main {
+                padding: 10px;
+            }
+            #chart {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
-        <div class="logo">Parking System</div>
         <nav>
             <ul>
                 <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
@@ -20,35 +84,13 @@
         </nav>
     </header>
     <main>
-        <h1>Admin Dashboard</h1>
-        <div class="admin-container">
-            <div class="graph">
-                <h2>Slot Usage in Last 24 Hours</h2>
-                <canvas id="usageChart"></canvas>
-            </div>
-            <div class="admin-stats">
-                <div class="stat-card">
-                    <h3>Total Revenue</h3>
-                    <p id="totalRevenue">$0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Users</h3>
-                    <p id="totalUsers">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Peak Hours</h3>
-                    <p id="peakHours">N/A</p>
-                </div>
-            </div>
-        </div>
+        <h1>Admin Page</h1>
+        <div id="chart"></div>
     </main>
-    <footer>
-        <p>&copy; 2024 Parking System. All rights reserved.</p>
-    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
-        import { Chart } from "https://cdn.jsdelivr.net/npm/chart.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAqx_A1kf7D0W4M9wN69Zt3iRUgn59DNQU",
@@ -64,36 +106,32 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const usageChartCtx = document.getElementById('usageChart').getContext('2d');
-        const usageChart = new Chart(usageChartCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Slot Usage',
-                    data: [],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+        onValue(ref(db, 'vehicles'), (snapshot) => {
+            const data = snapshot.val();
+            const labels = Object.keys(data);
+            const values = labels.map(key => data[key].endTime - Date.now());
+
+            const ctx = document.getElementById('chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Time Left (ms)',
+                        data: values,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
-
-        onValue(ref(db, 'admin/usage'), (snapshot) => {
-            const data = snapshot.val();
-            usageChart.data.labels = data.labels;
-            usageChart.data.datasets[0].data = data.usage;
-            usageChart.update();
-
-            document.getElementById('totalRevenue').textContent = `$${data.totalRevenue}`;
-            document.getElementById('totalUsers').textContent = data.totalUsers;
-            document.getElementById('peakHours').textContent = data.peakHours;
+            });
         });
     </script>
 </body>
