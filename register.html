@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register & Pay</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">Parking System</div>
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="register.html"><i class="fas fa-car"></i> Register & Pay</a></li>
+                <li><a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="box">
+            <div class="form">
+                <h2>Vehicle Registration</h2>
+                <form id="registerForm">
+                    <div class="inputbox">
+                        <input type="text" id="carPlate" required>
+                        <span>Car Plate</span>
+                    </div>
+                    <div class="inputbox">
+                        <input type="number" id="payment" required>
+                        <span>Payment ($1 per 10 minutes)</span>
+                    </div>
+                    <button type="submit" class="sub">Register & Pay</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Parking System. All rights reserved.</p>
+    </footer>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, set, remove } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqx_A1kf7D0W4M9wN69Zt3iRUgn59DNQU",
+            authDomain: "sps-7122.firebaseapp.com",
+            databaseURL: "https://sps-7122-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "sps-7122",
+            storageBucket: "sps-7122.appspot.com",
+            messagingSenderId: "973386811954",
+            appId: "1:973386811954:web:7b3c6df23612225a630a2b",
+            measurementId: "G-KG1LK1H4TW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const carPlate = document.getElementById('carPlate').value;
+            const payment = document.getElementById('payment').value;
+            const timePaid = payment * 10; // $1 = 10 minutes
+            const endTime = Date.now() + timePaid * 60000;
+
+            set(ref(db, 'vehicles/' + carPlate), {
+                carPlate: carPlate,
+                payment: payment,
+                endTime: endTime
+            });
+
+            alert('Vehicle registered and payment successful!');
+
+            setTimeout(() => {
+                remove(ref(db, 'vehicles/' + carPlate));
+                alert(`Time's up for ${carPlate}!`);
+            }, timePaid * 60000);
+        });
+    </script>
+</body>
+</html>
