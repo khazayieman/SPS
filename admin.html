@@ -58,7 +58,7 @@
             height: 400px;
             margin-bottom: 20px;
         }
-        .form, .user-list {
+        .form, .users-list {
             width: 80%;
             max-width: 400px;
             background: #fff;
@@ -66,21 +66,21 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
-        .form h2, .user-list h2 {
+        .form h2, .users-list h2 {
             margin-bottom: 15px;
         }
-        .form .inputbox, .user-list .inputbox {
+        .form .inputbox {
             position: relative;
             margin-bottom: 30px;
         }
-        .form .inputbox input, .user-list .inputbox input {
+        .form .inputbox input {
             width: 100%;
             padding: 10px;
             border: none;
             border-bottom: 2px solid #ccc;
             outline: none;
         }
-        .form .inputbox span, .user-list .inputbox span {
+        .form .inputbox span {
             position: absolute;
             left: 0;
             top: 10px;
@@ -88,13 +88,13 @@
             color: #aaa;
             transition: 0.3s;
         }
-        .form .inputbox input:focus + span, .user-list .inputbox input:focus + span,
-        .form .inputbox input:valid + span, .user-list .inputbox input:valid + span {
+        .form .inputbox input:focus + span,
+        .form .inputbox input:valid + span {
             top: -10px;
             font-size: 12px;
             color: #333;
         }
-        .form .submit-btn, .user-list .submit-btn {
+        .form .submit-btn {
             width: 100%;
             padding: 10px;
             background: #0cc0df;
@@ -104,8 +104,21 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .form .submit-btn:hover, .user-list .submit-btn:hover {
+        .form .submit-btn:hover {
             background: #0a9ab6;
+        }
+        .users-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .users-list table, .users-list th, .users-list td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .users-list th {
+            background-color: #f2f2f2;
+            color: #333;
+            text-align: left;
         }
         @media (max-width: 600px) {
             header nav ul {
@@ -137,11 +150,23 @@
         <h1>Admin Page</h1>
         <div id="chart"></div>
 
-        <div class="user-list">
+        <div class="users-list">
             <h2>All Users</h2>
-            <ul id="user-list">
-                <!-- Users will be populated here -->
-            </ul>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Car Plate</th>
+                        <th>End Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table">
+                    <!-- Users data will be populated here -->
+                </tbody>
+            </table>
         </div>
 
         <div class="form">
@@ -156,7 +181,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAqx_A1kf7D0W4M9wN69Zt3iRUgn59DNQU",
@@ -172,6 +197,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Display Chart
         onValue(ref(db, 'vehicles'), (snapshot) => {
             const data = snapshot.val();
             const labels = Object.keys(data);
@@ -198,23 +224,47 @@
                     }
                 }
             });
+        });
 
-            const userList = document.getElementById('user-list');
-            userList.innerHTML = '';
-            labels.forEach(label => {
-                const user = data[label];
-                const listItem = document.createElement('li');
-                listItem.textContent = `Plate: ${label}, User: ${user.username}, Email: ${user.email}, Phone: ${user.phone}, End Time: ${new Date(user.endTime).toLocaleString()}`;
-                userList.appendChild(listItem);
+        // Populate Users Table
+        onValue(ref(db, 'vehicles'), (snapshot) => {
+            const data = snapshot.val();
+            const table = document.getElementById('users-table');
+            table.innerHTML = '';  // Clear the table
+
+            for (let key in data) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data[key].username}</td>
+                    <td>${data[key].email}</td>
+                    <td>${data[key].phone}</td>
+                    <td>${data[key].plate}</td>
+                    <td>${new Date(data[key].endTime).toLocaleString()}</td>
+                    <td><button class="delete-btn" data-plate="${data[key].plate}">Delete</button></td>
+                `;
+                table.appendChild(row);
+            }
+
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const plate = this.getAttribute('data-plate');
+                    remove(ref(db, 'vehicles/' + plate)).then(() => {
+                        alert("Vehicle deleted successfully!");
+                    }).catch((error) => {
+                        alert("Failed to delete vehicle: " + error.message);
+                    });
+                });
             });
         });
 
+        // Delete User
         document.getElementById("delete-user").addEventListener('click', function(e) {
             e.preventDefault();
             const plate = document.getElementById("delete-plate").value;
-
             remove(ref(db, 'vehicles/' + plate)).then(() => {
                 alert("Vehicle deleted successfully!");
+                document.getElementById("delete-plate").value = '';  // Clear the input field
             }).catch((error) => {
                 alert("Failed to delete vehicle: " + error.message);
             });
