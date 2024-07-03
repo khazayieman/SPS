@@ -4,13 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parking Slot Status</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        header nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+        header nav ul li {
+            margin: 0 15px;
+        }
+        header nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        header nav ul li a i {
+            margin-right: 8px;
+        }
+        header nav ul li a:hover {
+            text-decoration: underline;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        td {
+            color: #555;
+        }
+        .occupied {
+            color: red;
+        }
+        .free {
+            color: green;
+        }
+        @media (max-width: 600px) {
+            header nav ul {
+                flex-direction: column;
+            }
+            header nav ul li {
+                margin: 10px 0;
+            }
+            main {
+                padding: 10px;
+            }
+            table {
+                width: 90%;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
-        <div class="logo">Parking System</div>
         <nav>
             <ul>
                 <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
@@ -31,37 +115,34 @@
             <tbody>
                 <tr>
                     <td>Slot 1</td>
-                    <td id="slot1" class="slot-status">Loading...</td>
+                    <td id="slot1">Loading...</td>
                 </tr>
                 <tr>
                     <td>Slot 2</td>
-                    <td id="slot2" class="slot-status">Loading...</td>
+                    <td id="slot2">Loading...</td>
                 </tr>
                 <tr>
                     <td>Slot 3</td>
-                    <td id="slot3" class="slot-status">Loading...</td>
+                    <td id="slot3">Loading...</td>
                 </tr>
                 <tr>
                     <td>Slot 4</td>
-                    <td id="slot4" class="slot-status">Loading...</td>
+                    <td id="slot4">Loading...</td>
                 </tr>
                 <tr>
                     <td>Slot 5</td>
-                    <td id="slot5" class="slot-status">Loading...</td>
+                    <td id="slot5">Loading...</td>
                 </tr>
                 <tr>
                     <td>Slot 6</td>
-                    <td id="slot6" class="slot-status">Loading...</td>
+                    <td id="slot6">Loading...</td>
                 </tr>
             </tbody>
         </table>
     </main>
-    <footer>
-        <p>&copy; 2024 Parking System. All rights reserved.</p>
-    </footer>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAqx_A1kf7D0W4M9wN69Zt3iRUgn59DNQU",
@@ -88,11 +169,14 @@
             }
         }
 
-        onValue(ref(db, 'slots'), (snapshot) => {
+        onValue(ref(db), (snapshot) => {
             const data = snapshot.val();
-            for (let i = 1; i <= 6; i++) {
-                updateTable(`slot${i}`, data[`slot${i}`]);
-            }
+            updateTable('slot1', data.slot1);
+            updateTable('slot2', data.slot2);
+            updateTable('slot3', data.slot3);
+            updateTable('slot4', data.slot4);
+            updateTable('slot5', data.slot5);
+            updateTable('slot6', data.slot6);
         });
     </script>
 </body>
