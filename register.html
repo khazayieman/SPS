@@ -191,6 +191,25 @@
         const db = getDatabase(app);
         const messaging = getMessaging(app);
 
+        function validateUsername(username) {
+            const usernameRegex = /^[A-Za-z][A-Za-z0-9]{4,19}$/;
+            return usernameRegex.test(username);
+        }
+
+        function validateEmail(email) {
+            return email.endsWith("@gmail.com");
+        }
+
+        function validatePhone(phone) {
+            const phoneRegex = /^\d{10}$/;
+            return phoneRegex.test(phone);
+        }
+
+        function validatePlate(plate) {
+            const plateRegex = /^[A-Z]{3}\d{4}$/;
+            return plateRegex.test(plate);
+        }
+
         document.getElementById("submit").addEventListener('click', function(e) {
             e.preventDefault();
             const username = document.getElementById("username").value;
@@ -198,6 +217,27 @@
             const phone = document.getElementById("phone").value;
             const plate = document.getElementById("plate").value;
             const amount = document.getElementById("amount").value;
+
+             if (!validateUsername(username)) {
+                alert("Please enter a valid username (5-20 characters, starting with a letter, and containing only alphanumeric characters)!");
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                alert("Please enter a valid @gmail.com email address!");
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                alert("Please enter a valid 10-digit phone number!");
+                return;
+            }
+
+            if (!validatePlate(plate)) {
+                alert("Please enter a valid car plate number (three uppercase letters followed by four digits!).");
+                return;
+            }
+
 
             const endTime = Date.now() + amount * 600000;
 
