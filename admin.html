@@ -258,17 +258,25 @@
             });
         });
 
-        // Delete User
-        document.getElementById("delete-user").addEventListener('click', function(e) {
-            e.preventDefault();
-            const plate = document.getElementById("delete-plate").value;
-            remove(ref(db, 'vehicles/' + plate)).then(() => {
-                alert("Vehicle deleted successfully!");
-                document.getElementById("delete-plate").value = '';  // Clear the input field
-            }).catch((error) => {
-                alert("Failed to delete vehicle: " + error.message);
-            });
+         // Delete User
+    document.getElementById("delete-user").addEventListener('click', function(e) {
+        e.preventDefault();
+        const plate = document.getElementById("delete-plate").value.trim();
+
+        if (!plate) {
+            alert("Please insert the car plate!");
+            return;
+        }
+
+        remove(ref(db, 'vehicles/' + plate)).then(() => {
+            alert("Vehicle deleted successfully!");
+            document.getElementById("delete-plate").value = '';  // Clear the input field
+        }).catch((error) => {
+            alert("Failed to delete vehicle: " + error.message);
         });
-    </script>
+    });
+        </script>
+
+
 </body>
 </html>
