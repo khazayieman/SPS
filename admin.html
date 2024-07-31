@@ -258,7 +258,7 @@
             });
         });
 
-         // Delete User
+        // Delete User
     document.getElementById("delete-user").addEventListener('click', function(e) {
         e.preventDefault();
         const plate = document.getElementById("delete-plate").value.trim();
@@ -268,14 +268,23 @@
             return;
         }
 
-        remove(ref(db, 'vehicles/' + plate)).then(() => {
-            alert("Vehicle deleted successfully!");
-            document.getElementById("delete-plate").value = '';  // Clear the input field
-        }).catch((error) => {
-            alert("Failed to delete vehicle: " + error.message);
+        const vehicleRef = ref(db, 'vehicles/' + plate);
+        onValue(vehicleRef, (snapshot) => {
+            if (snapshot.exists()) {
+                remove(vehicleRef).then(() => {
+                    alert("Vehicle deleted successfully!");
+                    document.getElementById("delete-plate").value = '';  // Clear the input field
+                }).catch((error) => {
+                    alert("Failed to delete vehicle: " + error.message);
+                });
+            } else {
+                alert("Please insert the correct car plate!");
+            }
+        }, {
+            onlyOnce: true
         });
     });
-        </script>
+</script>
 
 
 </body>
