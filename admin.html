@@ -268,16 +268,19 @@
             return;
         }
 
-        const vehicleRef = ref(db, 'vehicles/' + plate);
-        onValue(vehicleRef, (snapshot) => {
-            if (snapshot.exists()) {
-                remove(vehicleRef).then(() => {
+        const vehiclesRef = ref(db, 'vehicles');
+        onValue(vehiclesRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data && data[plate]) {
+                // Car plate exists, proceed to delete
+                remove(ref(db, 'vehicles/' + plate)).then(() => {
                     alert("Vehicle deleted successfully!");
                     document.getElementById("delete-plate").value = '';  // Clear the input field
                 }).catch((error) => {
                     alert("Failed to delete vehicle: " + error.message);
                 });
             } else {
+                // Car plate does not exist
                 alert("Please insert the correct car plate!");
             }
         }, {
